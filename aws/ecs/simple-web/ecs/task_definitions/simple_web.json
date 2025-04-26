@@ -1,0 +1,4 @@
+{
+    "name": "flask-web",
+    "image": "345003923266.dkr.ecr.ap-northeast-2.amazonaws.com/cloud-projects:simple-web0.1"
+}
