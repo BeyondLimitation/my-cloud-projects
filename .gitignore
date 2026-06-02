@@ -52,3 +52,7 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+## VSCode setting
+# Ignore '*.code-workspace'
+*.code-workspace
