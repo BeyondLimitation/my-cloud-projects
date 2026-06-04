@@ -35,13 +35,13 @@ variable "bucket_name" {
 
   validation {
     # 특정 접두사로 시작 금지
-    condition = !startswith(var.bucket_name, "xn--") && !startswith(var.bucket_name, "sthree-") && !startswith(var.bucket_name, "amzn-s3-demo-")
+    condition     = !startswith(var.bucket_name, "xn--") && !startswith(var.bucket_name, "sthree-") && !startswith(var.bucket_name, "amzn-s3-demo-")
     error_message = "특정 접두사 'xn--', 'sthree-', 'amzn-s3-demo-'로 시작하면 안됩니다."
   }
 
   validation {
     # 특정 접두사로 끝 금지
-    condition = !endswith(var.bucket_name, "-s3alias") && !endswith(var.bucket_name, "--ol-s3") && !endswith(var.bucket_name, ".mrap") && !endswith(var.bucket_name, "--x-s3") && !endswith(var.bucket_name, "--table-s3")
+    condition     = !endswith(var.bucket_name, "-s3alias") && !endswith(var.bucket_name, "--ol-s3") && !endswith(var.bucket_name, ".mrap") && !endswith(var.bucket_name, "--x-s3") && !endswith(var.bucket_name, "--table-s3")
     error_message = "특정 접두사 '-s3alias', '--ol-s3', '.mrap', '--x-s3', '--table-s3'로 끝나면 안됩니다."
   }
 }
@@ -53,4 +53,17 @@ variable "env_bootstrap" {
     "Environment" = "Bootstrap"
     "IaCTool"     = "Terraform"
   }
+}
+
+# Github Action
+variable "client_id_list" {
+  type        = list(string)
+  description = "Open ID Client ID 값 List"
+  default     = ["sts.amazonaws.com"]
+}
+
+variable "thumbprint_list" {
+  type        = list(string)
+  description = "Github Action에 사용할 Open ID 값 List"
+  default     = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
 }

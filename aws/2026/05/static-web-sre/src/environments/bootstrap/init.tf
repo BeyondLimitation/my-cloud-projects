@@ -30,3 +30,12 @@ resource "aws_s3_bucket_versioning" "static_web_sre-enable_versioning" {
     status = "Enabled"
   }
 }
+
+# IAM # Github Action이 사용할 IAM OIDC Connector
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = var.client_id_list
+  thumbprint_list = var.thumbprint_list
+
+  tags = var.env_bootstrap
+}
