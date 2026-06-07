@@ -7,3 +7,13 @@ output "iam_oidc_provider" {
   description = "AWS IAM Open ID Provider의 ARN"
   value       = aws_iam_openid_connect_provider.github.arn
 }
+
+output "iam_role-dev" {
+  description = "IAM Role 'github-action_dev-branch'의 ARN"
+  value       = aws_iam_role.github_action-dev.arn
+}
+
+output "iam_role-prod" {
+  description = "IAM Role 'github-action_dev-branch'의 ARN"
+  value       = aws_iam_role.github_action-prod.arn
+}

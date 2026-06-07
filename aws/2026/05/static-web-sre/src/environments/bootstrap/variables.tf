@@ -9,6 +9,7 @@ variable "region" {
   default     = "ap-northeast-2"
 }
 
+# S3
 variable "bucket_name" {
   type        = string
   description = "Project에 사용할 Bucket 이름"
@@ -45,13 +46,36 @@ variable "bucket_name" {
     error_message = "특정 접두사 '-s3alias', '--ol-s3', '.mrap', '--x-s3', '--table-s3'로 끝나면 안됩니다."
   }
 }
-
+# Tag
 variable "env_bootstrap" {
   type        = map(string)
   description = "Bootstrap 환경에서 생성된 태그"
   default = {
     "Environment" = "Bootstrap"
     "IaCTool"     = "Terraform"
+  }
+}
+
+# IAM
+variable "iam_name-dev" {
+  type        = string
+  description = "IAM 리소스 이름 (알파벳, 숫자, +, =, ,, ., @, _, - 허용)"
+
+  validation {
+    # 영문, 숫자 및 지정된 특수문자(+=,.@_-)만 허용 (공백 불가)
+    condition     = can(regex("^[a-zA-Z0-9+=,.@_\\-]+$", var.iam_name-dev))
+    error_message = "IAM 이름은 영문, 숫자 및 다음 특수문자만 포함할 수 있습니다: +, =, ,, ., @, _, -"
+  }
+}
+
+variable "iam_name-prod" {
+  type        = string
+  description = "IAM 리소스 이름 (알파벳, 숫자, +, =, ,, ., @, _, - 허용)"
+
+  validation {
+    # 영문, 숫자 및 지정된 특수문자(+=,.@_-)만 허용 (공백 불가)
+    condition     = can(regex("^[a-zA-Z0-9+=,.@_\\-]+$", var.iam_name-prod))
+    error_message = "IAM 이름은 영문, 숫자 및 다음 특수문자만 포함할 수 있습니다: +, =, ,, ., @, _, -"
   }
 }
 
@@ -66,4 +90,9 @@ variable "thumbprint_list" {
   type        = list(string)
   description = "Github Action에 사용할 Open ID 값 List"
   default     = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+}
+
+variable "git_repo" {
+  type        = string
+  description = "Git 저장소 이름"
 }

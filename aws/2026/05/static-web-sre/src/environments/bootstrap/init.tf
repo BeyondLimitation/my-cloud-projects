@@ -39,3 +39,13 @@ resource "aws_iam_openid_connect_provider" "github" {
 
   tags = var.env_bootstrap
 }
+
+resource "aws_iam_role" "github_action-dev" {
+  name               = var.iam_name-dev
+  assume_role_policy = templatefile("./iam/role/dev/trust_github_action.json", { oidc_providers = aws_iam_openid_connect_provider.github.arn, git_repo = var.git_repo })
+}
+
+resource "aws_iam_role" "github_action-prod" {
+  name               = var.iam_name-prod
+  assume_role_policy = templatefile("./iam/role/prod/trust_github_action.json", { oidc_providers = aws_iam_openid_connect_provider.github.arn, git_repo = var.git_repo })
+}
