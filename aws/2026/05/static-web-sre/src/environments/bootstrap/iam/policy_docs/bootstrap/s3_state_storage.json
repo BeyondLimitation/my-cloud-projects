@@ -1,0 +1,29 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "${dev_role}"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:PutObject"
+      ],
+      "Resource": [ "${state_bucket}/dev/", "${state_bucket}/dev/*"]
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "${prod_role}"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:PutObject"
+      ],
+      "Resource": [ "${state_bucket}/prod/", "${state_bucket}/prod/*"]
+    }
+  ]
+}

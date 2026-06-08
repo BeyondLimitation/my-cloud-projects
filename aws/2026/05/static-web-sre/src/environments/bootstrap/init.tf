@@ -30,6 +30,13 @@ resource "aws_s3_bucket_versioning" "static_web_sre-enable_versioning" {
     status = "Enabled"
   }
 }
+
+# S3 # Bucket Policy 적용
+resource "aws_s3_bucket_policy" "allow_save" {
+  bucket = aws_s3_bucket.static_web_sre-state_storage.id
+  policy = templatefile("./iam/policy_docs/bootstrap/s3_state_storage.json", { dev_role = aws_iam_role.github_action-dev.arn, prod_role = aws_iam_role.github_action-prod.arn, state_bucket = aws_s3_bucket.static_web_sre-state_storage.arn })
+}
+
 # S3 # Dev, Prod Branch가 사용할 디랙토리 생성
 # Dev
 resource "aws_s3_object" "dev_directory" {
@@ -41,6 +48,7 @@ resource "aws_s3_object" "prod_directory" {
   bucket = aws_s3_bucket.static_web_sre-state_storage.id
   key    = "prod/"
 }
+
 
 # IAM # Github Action이 사용할 IAM OIDC Connector
 resource "aws_iam_openid_connect_provider" "github" {
