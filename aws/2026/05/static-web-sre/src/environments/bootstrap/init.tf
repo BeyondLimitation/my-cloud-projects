@@ -104,5 +104,63 @@ resource "aws_iam_policy_attachment" "github_action-prod" {
 ### 정적 웹사이트 구성
 
 # S3 # 'dev'용 정적 웹사이트 Bucket
+resource "aws_s3_bucket" "static_web_sre-dev" {
+  bucket = var.dev_web_bucket_name
+  region = var.region
+  tags = {
+    Environment = "Development"
+    IaCTool     = "Terraform"
+  }
+}
+# S3 객체 소유권 설정
+resource "aws_s3_bucket_ownership_controls" "static_web_sre-dev" {
+  bucket = aws_s3_bucket.static_web_sre-dev.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+# Bucket ACL 설정
+resource "aws_s3_bucket_acl" "static_web_sre-dev" {
+  bucket = aws_s3_bucket.static_web_sre-dev.id
+  acl    = "private"
+  depends_on = [ aws_s3_bucket_ownership_controls.static_web_sre-dev ]
+}
+# Bucket Public Access 접근 허용
+resource "aws_s3_bucket_public_access_block" "static_web_sre-dev" {
+  bucket = aws_s3_bucket.static_web_sre-dev.id
+
+  # 인터넷을 통한 외부 접근 허용. 단, 내부에 뭐가 있는지는 볼 수 없게하기
+  block_public_acls       = false
+  ignore_public_acls      = false
+  block_public_policy     = true
+  restrict_public_buckets = true
+  depends_on = [ aws_s3_bucket_ownership_controls.static_web_sre-dev ]
+}
+
+# S3 Bucket에 사용할 웹 서버 페이지 객체 생성
+resource "aws_s3_object" "index_page" {
+  bucket = aws_s3_bucket.static_web_sre-dev.id
+  key    = "index.html"
+  # 객체 컨텐츠 설정
+  content_base64 = "PCFET0NUWVBFIGh0bWw+DQo8aHRtbD4NCjxoZWFkPg0KPHRpdGxlPkRldiBQYWdlPC90aXRsZT4NCjwvaGVhZD4NCjxib2R5Pg0KDQo8aDE+VGVzdGluZyBQYWdlPC9oMT4NCg0KPC9ib2R5Pg0KPC9odG1sPg=="
+  content_type   = "text/html"
+  # 접근 권한 설정
+  acl = "public-read"
+
+  depends_on = [ aws_s3_bucket_ownership_controls.static_web_sre-dev ]
+}
+
+# Bucket Website 구성
+resource "aws_s3_bucket_website_configuration" "dev" {
+  bucket = aws_s3_bucket.static_web_sre-dev.id
+  # 지정된 기본 페이지 위치
+  index_document {
+    suffix = "index.html"
+  }
+  #에러 페이지
+  error_document {
+    key = "error.html"
+  }
+}
 # S3 # 'prod'용 정적 웹사이트 Bucket
 # CloudFront # SSL/TLS 용도
