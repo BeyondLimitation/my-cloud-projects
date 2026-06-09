@@ -74,6 +74,12 @@ resource "aws_iam_policy" "github_action-dev" {
 
   tags = var.env_bootstrap
 }
+# IAM 정책 문서 연결
+resource "aws_iam_policy_attachment" "github_action-dev" {
+  name       = "github-action-dev"
+  roles      = [aws_iam_role.github_action-dev.name]
+  policy_arn = aws_iam_policy.github_action-dev.arn
+}
 
 # IAM # IAM Role 생성. "github_action-prod"
 resource "aws_iam_role" "github_action-prod" {
@@ -88,3 +94,15 @@ resource "aws_iam_policy" "github_action-prod" {
 
   tags = var.env_bootstrap
 }
+# IAM 정책 문서 연결
+resource "aws_iam_policy_attachment" "github_action-prod" {
+  name       = "github-action-prod"
+  roles      = [aws_iam_role.github_action-prod.name]
+  policy_arn = aws_iam_policy.github_action-prod.arn
+}
+
+### 정적 웹사이트 구성
+
+# S3 # 'dev'용 정적 웹사이트 Bucket
+# S3 # 'prod'용 정적 웹사이트 Bucket
+# CloudFront # SSL/TLS 용도
