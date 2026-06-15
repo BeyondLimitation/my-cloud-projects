@@ -162,5 +162,12 @@ resource "aws_s3_bucket_website_configuration" "dev" {
     key = "error.html"
   }
 }
+
+# Bucket Policy 설정
+resource "aws_s3_bucket_policy" "dev" {
+  bucket = aws_s3_bucket.static_web_sre-dev.id
+  policy = templatefile("./iam/policy_docs/bootstrap/dev_bucket.json", { dev_role_arn = aws_iam_role.github_action-dev.arn, dev_bucket_arn = aws_s3_bucket.static_web_sre-dev.arn })
+}
+
 # S3 # 'prod'용 정적 웹사이트 Bucket
 # CloudFront # SSL/TLS 용도

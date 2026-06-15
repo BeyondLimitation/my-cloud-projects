@@ -3,6 +3,12 @@ output "s3_bucket_arn" {
   value       = aws_s3_bucket.static_web_sre-state_storage.arn
 }
 
+output "dev_bucket_arn" {
+  description = "개발용 S3 Bucket의 ARN"
+  value       = aws_s3_bucket.static_web_sre-dev.arn
+}
+
+
 output "iam_oidc_provider" {
   description = "AWS IAM Open ID Provider의 ARN"
   value       = aws_iam_openid_connect_provider.github.arn
