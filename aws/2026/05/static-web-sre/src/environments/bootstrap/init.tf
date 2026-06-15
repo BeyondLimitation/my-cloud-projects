@@ -70,7 +70,7 @@ resource "aws_iam_role" "github_action-dev" {
 resource "aws_iam_policy" "github_action-dev" {
   name        = "github_action-dev"
   description = "Let github action access S3 Bucket"
-  policy      = templatefile("./iam/policy_docs/dev/github_action.json", { aws_s3_arn = aws_s3_bucket.static_web_sre-state_storage.arn })
+  policy      = templatefile("./iam/policy_docs/dev/github_action.json", { aws_s3_arn = aws_s3_bucket.static_web_sre-state_storage.arn, dev_bucket_arn = aws_s3_bucket.static_web_sre-dev.arn })
 
   tags = var.env_bootstrap
 }
@@ -121,9 +121,9 @@ resource "aws_s3_bucket_ownership_controls" "static_web_sre-dev" {
 }
 # Bucket ACL 설정
 resource "aws_s3_bucket_acl" "static_web_sre-dev" {
-  bucket = aws_s3_bucket.static_web_sre-dev.id
-  acl    = "private"
-  depends_on = [ aws_s3_bucket_ownership_controls.static_web_sre-dev ]
+  bucket     = aws_s3_bucket.static_web_sre-dev.id
+  acl        = "private"
+  depends_on = [aws_s3_bucket_ownership_controls.static_web_sre-dev]
 }
 # Bucket Public Access 접근 허용
 resource "aws_s3_bucket_public_access_block" "static_web_sre-dev" {
@@ -134,7 +134,7 @@ resource "aws_s3_bucket_public_access_block" "static_web_sre-dev" {
   ignore_public_acls      = false
   block_public_policy     = true
   restrict_public_buckets = true
-  depends_on = [ aws_s3_bucket_ownership_controls.static_web_sre-dev ]
+  depends_on              = [aws_s3_bucket_ownership_controls.static_web_sre-dev]
 }
 
 # S3 Bucket에 사용할 웹 서버 페이지 객체 생성
@@ -147,7 +147,7 @@ resource "aws_s3_object" "index_page" {
   # 접근 권한 설정
   acl = "public-read"
 
-  depends_on = [ aws_s3_bucket_ownership_controls.static_web_sre-dev ]
+  depends_on = [aws_s3_bucket_ownership_controls.static_web_sre-dev]
 }
 
 # Bucket Website 구성

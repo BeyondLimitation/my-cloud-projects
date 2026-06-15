@@ -6,10 +6,25 @@
       "Action": [
         "s3:DeleteObject",
         "s3:GetObject",
-        "s3:PutObject",
-        "s3:ListBucket"
+        "s3:PutObject"
       ],
-      "Resource": "${aws_s3_arn}/dev/*"
+      "Resource": [
+        "${aws_s3_arn}/dev/*",
+        "${dev_bucket_arn}/*"
+      ]
+    },{
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation",
+        "s3:GetBucketVersioning",
+        "s3:GetEncryptionConfiguration",
+        "s3:ListBucketVersions"
+      ],
+      "Resource": [
+        "${aws_s3_arn}/dev/*",
+        "${dev_bucket_arn}/*"
+      ]
     }
   ]
 }
