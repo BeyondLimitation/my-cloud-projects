@@ -8,6 +8,11 @@ output "dev_bucket_arn" {
   value       = aws_s3_bucket.static_web_sre-dev.arn
 }
 
+output "prod_bucket_arn" {
+  description = "프로덕션용 S3 Bucket의 ARN"
+  value       = aws_s3_bucket.static_web_sre-prod.arn
+}
+
 
 output "iam_oidc_provider" {
   description = "AWS IAM Open ID Provider의 ARN"

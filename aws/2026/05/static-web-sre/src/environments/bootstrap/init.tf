@@ -90,7 +90,7 @@ resource "aws_iam_role" "github_action-prod" {
 resource "aws_iam_policy" "github_action-prod" {
   name        = "github_action-prod"
   description = "Let github action access S3 Bucket"
-  policy      = templatefile("./iam/policy_docs/prod/github_action.json", { aws_s3_arn = aws_s3_bucket.static_web_sre-state_storage.arn })
+  policy      = templatefile("./iam/policy_docs/prod/github_action.json", { aws_s3_arn = aws_s3_bucket.static_web_sre-state_storage.arn, prod_bucket_arn = aws_s3_bucket.static_web_sre-prod.arn })
 
   tags = var.env_bootstrap
 }
