@@ -170,4 +170,69 @@ resource "aws_s3_bucket_policy" "dev" {
 }
 
 # S3 # 'prod'용 정적 웹사이트 Bucket
+resource "aws_s3_bucket" "static_web_sre-prod" {
+  bucket = var.prod_web_bucket_name
+  region = var.region
+  tags = {
+    Environment = "Production"
+    IaCTool     = "Terraform"
+  }
+}
+# S3 객체 소유권 설정
+resource "aws_s3_bucket_ownership_controls" "static_web_sre-prod" {
+  bucket = aws_s3_bucket.static_web_sre-prod.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+# Bucket ACL 설정
+resource "aws_s3_bucket_acl" "static_web_sre-prod" {
+  bucket     = aws_s3_bucket.static_web_sre-prod.id
+  acl        = "private"
+  depends_on = [aws_s3_bucket_ownership_controls.static_web_sre-prod]
+}
+# Bucket Public Access 접근 허용
+resource "aws_s3_bucket_public_access_block" "static_web_sre-prod" {
+  bucket = aws_s3_bucket.static_web_sre-prod.id
+
+  # 인터넷을 통한 외부 접근 허용. 단, 내부에 뭐가 있는지는 볼 수 없게하기
+  block_public_acls       = false
+  ignore_public_acls      = false
+  block_public_policy     = true
+  restrict_public_buckets = true
+  depends_on              = [aws_s3_bucket_ownership_controls.static_web_sre-prod]
+}
+
+# S3 Bucket에 사용할 웹 서버 페이지 객체 생성
+resource "aws_s3_object" "prod-index_page" {
+  bucket = aws_s3_bucket.static_web_sre-prod.id
+  key    = "index.html"
+  # 객체 컨텐츠 설정
+  content_base64 = "PCFET0NUWVBFIGh0bWw+DQo8aHRtbD4NCjxoZWFkPg0KPHRpdGxlPlByb2QgUGFnZTwvdGl0bGU+DQo8L2hlYWQ+DQo8Ym9keT4NCg0KPGgxPlByb2R1Y3Rpb24gUGFnZTwvaDE+DQoNCjwvYm9keT4NCjwvaHRtbD4="
+  content_type   = "text/html"
+  # 접근 권한 설정
+  acl = "public-read"
+
+  depends_on = [aws_s3_bucket_ownership_controls.static_web_sre-prod, aws_s3_bucket_public_access_block.static_web_sre-prod]
+}
+
+# Bucket Website 구성
+resource "aws_s3_bucket_website_configuration" "prod" {
+  bucket = aws_s3_bucket.static_web_sre-prod.id
+  # 지정된 기본 페이지 위치
+  index_document {
+    suffix = "index.html"
+  }
+  #에러 페이지
+  error_document {
+    key = "error.html"
+  }
+}
+
+# Bucket Policy 설정
+resource "aws_s3_bucket_policy" "prod" {
+  bucket = aws_s3_bucket.static_web_sre-prod.id
+  policy = templatefile("./iam/policy_docs/bootstrap/prod_bucket.json", { prod_role_arn = aws_iam_role.github_action-prod.arn, prod_bucket_arn = aws_s3_bucket.static_web_sre-prod.arn })
+}
+
 # CloudFront # SSL/TLS 용도
