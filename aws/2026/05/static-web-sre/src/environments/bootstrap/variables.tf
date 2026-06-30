@@ -168,7 +168,7 @@ variable "thumbprint_list" {
 }
 
 variable "git_org" {
-  type = string
+  type        = string
   description = "Github Organization"
 }
 
